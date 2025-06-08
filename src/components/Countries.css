@@ -310,3 +310,25 @@ input:focus {
         padding: 8px 10px;
     }
 }
+
+
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-input {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 300px;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.search-button {
+    padding: 10px 20px;
+}
+
+.center-text {
+    text-align: center;
+}

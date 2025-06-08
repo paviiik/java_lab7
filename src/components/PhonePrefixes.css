@@ -323,3 +323,7 @@ input:focus {
         padding: 8px 10px;
     }
 }
+
+.search-button {
+    padding: 10px 20px;
+}
