@@ -8,6 +8,37 @@ import {
 } from '../api/countryApi';
 import './Countries.css';
 
+const TEXT = {
+    listTitle: "Список стран",
+    addCountry: "Добавить страну",
+    editCountry: "Редактировать страну",
+    deleteConfirm: "Вы уверены, что хотите удалить эту страну?",
+    deleteSuccess: "Страна успешно удалена",
+    searchPlaceholder: "Поиск по коду, названию или телефонному коду",
+    search: "Поиск",
+    noCountries: "Нет стран для отображения",
+    loading: "Загрузка...",
+    errorTitle: "Ошибка",
+    close: "Закрыть",
+    save: "Сохранить",
+    validation: {
+        emptyCode: "Код страны не должен быть пустым",
+        longCode: "Код страны слишком длинный",
+        emptyName: "Название страны не должно быть пустым",
+        longName: "Название страны слишком длинное",
+        emptyPhoneCode: "Телефонный код не должен быть пустым"
+    },
+    placeholders: {
+        code: "Код страны (например, RU)",
+        name: "Название страны",
+        phoneCode: "Телефонный код (например, +7)"
+    },
+    actions: {
+        edit: "Редактировать",
+        delete: "Удалить"
+    }
+};
+
 const Countries = () => {
     const [countries, setCountries] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,11 +46,7 @@ const Countries = () => {
     const [isAddCountryModalOpen, setIsAddCountryModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-    const [currentCountry, setCurrentCountry] = useState({
-        code: '',
-        name: '',
-        phoneCode: ''
-    });
+    const [currentCountry, setCurrentCountry] = useState({ code: '', name: '', phoneCode: '' });
     const [validationErrors, setValidationErrors] = useState({});
     const [searchValue, setSearchValue] = useState('');
 
@@ -60,11 +87,11 @@ const Countries = () => {
     };
 
     const handleDelete = async (code) => {
-        if (window.confirm('Вы уверены, что хотите удалить эту страну?')) {
+        if (window.confirm(TEXT.deleteConfirm)) {
             try {
                 await deleteCountry(code);
                 setCountries(countries.filter(country => country.code !== code));
-                alert('Страна успешно удалена');
+                alert(TEXT.deleteSuccess);
             } catch (error) {
                 setError(error.message);
                 setIsErrorModalOpen(true);
@@ -82,17 +109,17 @@ const Countries = () => {
     const validateCountry = (country) => {
         const errors = {};
         if (!country.code.trim()) {
-            errors.code = "Код страны не должен быть пустым";
+            errors.code = TEXT.validation.emptyCode;
         } else if (country.code.length > 5) {
-            errors.code = "Код страны слишком длинный";
+            errors.code = TEXT.validation.longCode;
         }
         if (!country.name.trim()) {
-            errors.name = "Название страны не должно быть пустым";
+            errors.name = TEXT.validation.emptyName;
         } else if (country.name.length > 50) {
-            errors.name = "Название страны слишком длинное";
+            errors.name = TEXT.validation.longName;
         }
         if (!country.phoneCode.trim()) {
-            errors.phoneCode = "Телефонный код не должен быть пустым";
+            errors.phoneCode = TEXT.validation.emptyPhoneCode;
         }
         return errors;
     };
@@ -144,28 +171,23 @@ const Countries = () => {
         setError(null);
     };
 
-    if (loading) return <div className="loading">Загрузка...</div>;
+    if (loading) return <div className="loading">{TEXT.loading}</div>;
 
     return (
         <div className="app-container">
             <div className="country-panel">
                 <div className="country-header">
-                    <h1>Список стран</h1>
-                    <button
-                        className="add-country-button"
-                        onClick={() => {
-                            setCurrentCountry({ code: '', name: '', phoneCode: '' });
-                            setIsAddCountryModalOpen(true);
-                        }}
-                    >
-                        Добавить страну
-                    </button>
+                    <h1>{TEXT.listTitle}</h1>
+                    <button className="add-country-button" onClick={() => {
+                        setCurrentCountry({ code: '', name: '', phoneCode: '' });
+                        setIsAddCountryModalOpen(true);
+                    }}>{TEXT.addCountry}</button>
                 </div>
 
                 <div className="search-container">
                     <input
                         type="text"
-                        placeholder="Поиск по коду, названию или телефонному коду"
+                        placeholder={TEXT.searchPlaceholder}
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
                         className="search-input"
@@ -174,7 +196,7 @@ const Countries = () => {
                         className="add-country-button search-button"
                         onClick={handleSearch}
                     >
-                        Поиск
+                        {TEXT.search}
                     </button>
                 </div>
 
@@ -202,16 +224,16 @@ const Countries = () => {
                                             <button
                                                 onClick={() => handleEditClick(country)}
                                                 className="icon-button"
-                                                title="Редактировать"
+                                                title={TEXT.actions.edit}
                                             >
-                                                <img src="/icons/edit.svg" alt="Редактировать" className="icon-svg"/>
+                                                <img src="/icons/edit.svg" alt={TEXT.actions.edit} className="icon-svg" />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(country.code)}
                                                 className="icon-button delete-button"
-                                                title="Удалить"
+                                                title={TEXT.actions.delete}
                                             >
-                                                <img src="/icons/delete.svg" alt="Удалить" className="icon-svg"/>
+                                                <img src="/icons/delete.svg" alt={TEXT.actions.delete} className="icon-svg" />
                                             </button>
                                         </div>
                                     </td>
@@ -220,7 +242,7 @@ const Countries = () => {
                         ) : (
                             <tr>
                                 <td colSpan="5" className="center-text">
-                                    Нет стран для отображения
+                                    {TEXT.noCountries}
                                 </td>
                             </tr>
                         )}
@@ -233,39 +255,18 @@ const Countries = () => {
                 <div className="modal">
                     <div className="modal-content">
                         <span className="close" onClick={handleCloseModals}>&times;</span>
-                        <h2>Добавить страну</h2>
+                        <h2>{TEXT.addCountry}</h2>
                         <form onSubmit={handleAddCountry}>
-                            <input
-                                type="text"
-                                name="code"
-                                placeholder="Код страны (например, RU)"
-                                value={currentCountry.code}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <input type="text" name="code" placeholder={TEXT.placeholders.code} value={currentCountry.code} onChange={handleInputChange} required />
                             {validationErrors.code && <p className="error">{validationErrors.code}</p>}
 
-                            <input
-                                type="text"
-                                name="name"
-                                placeholder="Название страны"
-                                value={currentCountry.name}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <input type="text" name="name" placeholder={TEXT.placeholders.name} value={currentCountry.name} onChange={handleInputChange} required />
                             {validationErrors.name && <p className="error">{validationErrors.name}</p>}
 
-                            <input
-                                type="text"
-                                name="phoneCode"
-                                placeholder="Телефонный код (например, +7)"
-                                value={currentCountry.phoneCode}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <input type="text" name="phoneCode" placeholder={TEXT.placeholders.phoneCode} value={currentCountry.phoneCode} onChange={handleInputChange} required />
                             {validationErrors.phoneCode && <p className="error">{validationErrors.phoneCode}</p>}
 
-                            <button type="submit" className="add-country-button">Добавить</button>
+                            <button type="submit" className="add-country-button">{TEXT.addCountry}</button>
                         </form>
                     </div>
                 </div>
@@ -275,40 +276,18 @@ const Countries = () => {
                 <div className="modal">
                     <div className="modal-content">
                         <span className="close" onClick={handleCloseModals}>&times;</span>
-                        <h2>Редактировать страну</h2>
+                        <h2>{TEXT.editCountry}</h2>
                         <form onSubmit={handleUpdateCountry}>
-                            <input
-                                type="text"
-                                name="code"
-                                placeholder="Код страны"
-                                value={currentCountry.code}
-                                onChange={handleInputChange}
-                                required
-                                disabled
-                            />
+                            <input type="text" name="code" placeholder={TEXT.placeholders.code} value={currentCountry.code} onChange={handleInputChange} required disabled />
                             {validationErrors.code && <p className="error">{validationErrors.code}</p>}
 
-                            <input
-                                type="text"
-                                name="name"
-                                placeholder="Название страны"
-                                value={currentCountry.name}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <input type="text" name="name" placeholder={TEXT.placeholders.name} value={currentCountry.name} onChange={handleInputChange} required />
                             {validationErrors.name && <p className="error">{validationErrors.name}</p>}
 
-                            <input
-                                type="text"
-                                name="phoneCode"
-                                placeholder="Телефонный код"
-                                value={currentCountry.phoneCode}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <input type="text" name="phoneCode" placeholder={TEXT.placeholders.phoneCode} value={currentCountry.phoneCode} onChange={handleInputChange} required />
                             {validationErrors.phoneCode && <p className="error">{validationErrors.phoneCode}</p>}
 
-                            <button type="submit" className="add-country-button">Сохранить</button>
+                            <button type="submit" className="add-country-button">{TEXT.save}</button>
                         </form>
                     </div>
                 </div>
@@ -318,9 +297,9 @@ const Countries = () => {
                 <div className="modal error-modal">
                     <div className="modal-content">
                         <span className="close" onClick={closeErrorModal}>&times;</span>
-                        <h2>Ошибка</h2>
+                        <h2>{TEXT.errorTitle}</h2>
                         <p>{error}</p>
-                        <button className="error-button" onClick={closeErrorModal}>Закрыть</button>
+                        <button className="error-button" onClick={closeErrorModal}>{TEXT.close}</button>
                     </div>
                 </div>
             )}

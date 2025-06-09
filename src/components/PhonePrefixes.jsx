@@ -10,6 +10,45 @@ import {
 import { fetchAllCountries } from '../api/countryApi';
 import './PhonePrefixes.css';
 
+const TEXT = {
+    title: "Телефонные префиксы",
+    add: "Добавить префикс",
+    edit: "Редактировать телефонный префикс",
+    deleteConfirm: "Вы уверены, что хотите удалить этот префикс?",
+    unknownCountry: "Неизвестно",
+    loading: "Загрузка...",
+    error: "Ошибка:",
+    search: {
+        all: "Все префиксы",
+        byCode: "По коду страны",
+        byName: "По названию страны",
+        placeholderByCode: "Введите код страны",
+        placeholderByName: "Введите название страны"
+    },
+    validation: {
+        emptyPrefix: "Префикс не должен быть пустым",
+        emptyCountry: "Необходимо выбрать страну"
+    },
+    placeholders: {
+        prefix: "Префикс (например, +7)",
+        prefixSimple: "Префикс"
+    },
+    actions: {
+        save: "Сохранить",
+        selectCountry: "Выберите страну"
+    },
+    table: {
+        id: "ID",
+        prefix: "Префикс",
+        country: "Страна",
+        countryCode: "Код страны",
+        actions: "Действия"
+    },
+    modal: {
+        close: "×"
+    }
+};
+
 const PhonePrefixes = () => {
     const [prefixes, setPrefixes] = useState([]);
     const [countries, setCountries] = useState([]);
@@ -17,11 +56,7 @@ const PhonePrefixes = () => {
     const [error, setError] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [currentPrefix, setCurrentPrefix] = useState({
-        id: null,
-        prefix: '',
-        countryCode: ''
-    });
+    const [currentPrefix, setCurrentPrefix] = useState({ id: null, prefix: '', countryCode: '' });
     const [searchTerm, setSearchTerm] = useState('');
     const [searchType, setSearchType] = useState('all');
     const [validationErrors, setValidationErrors] = useState({});
@@ -47,10 +82,10 @@ const PhonePrefixes = () => {
     const validatePrefix = (prefix) => {
         const errors = {};
         if (!prefix.prefix.trim()) {
-            errors.prefix = "Префикс не должен быть пустым";
+            errors.prefix = TEXT.validation.emptyPrefix;
         }
         if (!prefix.countryCode) {
-            errors.countryCode = "Необходимо выбрать страну";
+            errors.countryCode = TEXT.validation.emptyCountry;
         }
         return errors;
     };
@@ -110,7 +145,7 @@ const PhonePrefixes = () => {
     };
 
     const handleDeletePrefix = async (id) => {
-        if (window.confirm('Вы уверены, что хотите удалить этот префикс?')) {
+        if (window.confirm(TEXT.deleteConfirm)) {
             try {
                 await deletePrefix(id);
                 setPrefixes(prefixes.filter(p => p.id !== id));
@@ -122,7 +157,7 @@ const PhonePrefixes = () => {
 
     const getCountryName = (countryCode) => {
         const country = countries.find(c => c.code === countryCode);
-        return country ? country.name : 'Неизвестно';
+        return country ? country.name : TEXT.unknownCountry;
     };
 
     const handleCloseModals = () => {
@@ -132,19 +167,16 @@ const PhonePrefixes = () => {
         setValidationErrors({});
     };
 
-    if (loading) return <div className="loading">Загрузка...</div>;
-    if (error) return <div className="error">Ошибка: {error}</div>;
+    if (loading) return <div className="loading">{TEXT.loading}</div>;
+    if (error) return <div className="error">{TEXT.error} {error}</div>;
 
     return (
         <div className="app-container">
             <div className="prefix-panel">
                 <div className="prefix-header">
-                    <h1>Телефонные префиксы</h1>
-                    <button
-                        className="add-country-button"
-                        onClick={() => setIsAddModalOpen(true)}
-                    >
-                        Добавить префикс
+                    <h1>{TEXT.title}</h1>
+                    <button className="add-country-button" onClick={() => setIsAddModalOpen(true)}>
+                        {TEXT.add}
                     </button>
                 </div>
 
@@ -154,25 +186,25 @@ const PhonePrefixes = () => {
                         onChange={(e) => setSearchType(e.target.value)}
                         className="search-select"
                     >
-                        <option value="all">Все префиксы</option>
-                        <option value="countryCode">По коду страны</option>
-                        <option value="countryName">По названию страны</option>
+                        <option value="all">{TEXT.search.all}</option>
+                        <option value="countryCode">{TEXT.search.byCode}</option>
+                        <option value="countryName">{TEXT.search.byName}</option>
                     </select>
                     <input
                         type="text"
                         placeholder={
-                            searchType === 'countryCode' ? 'Введите код страны' :
-                                searchType === 'countryName' ? 'Введите название страны' : ''
+                            searchType === 'countryCode'
+                                ? TEXT.search.placeholderByCode
+                                : searchType === 'countryName'
+                                    ? TEXT.search.placeholderByName
+                                    : ''
                         }
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         disabled={searchType === 'all'}
                         className="search-input"
                     />
-                    <button
-                        className="add-country-button search-button"
-                        onClick={handleSearch}
-                    >
+                    <button className="add-country-button search-button" onClick={handleSearch}>
                         Поиск
                     </button>
                 </div>
@@ -181,11 +213,11 @@ const PhonePrefixes = () => {
                     <table className="styled-table">
                         <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Префикс</th>
-                            <th>Страна</th>
-                            <th>Код страны</th>
-                            <th>Действия</th>
+                            <th>{TEXT.table.id}</th>
+                            <th>{TEXT.table.prefix}</th>
+                            <th>{TEXT.table.country}</th>
+                            <th>{TEXT.table.countryCode}</th>
+                            <th>{TEXT.table.actions}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -205,17 +237,15 @@ const PhonePrefixes = () => {
                                             className="icon-button"
                                             title="Редактировать"
                                         >
-                                            <img src="/icons/edit.svg" alt="Редактировать" className="icon-svg"/>
+                                            <img src="/icons/edit.svg" alt="Редактировать" className="icon-svg" />
                                         </button>
-
                                         <button
                                             onClick={() => handleDeletePrefix(prefix.id)}
                                             className="icon-button delete-button"
                                             title="Удалить"
                                         >
-                                            <img src="/icons/delete.svg" alt="Удалить" className="icon-svg"/>
+                                            <img src="/icons/delete.svg" alt="Удалить" className="icon-svg" />
                                         </button>
-
                                     </div>
                                 </td>
                             </tr>
@@ -228,17 +258,17 @@ const PhonePrefixes = () => {
             {isAddModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
-                        <span className="close" onClick={handleCloseModals}>&times;</span>
-                        <h2>Добавить телефонный префикс</h2>
+                        <span className="close" onClick={handleCloseModals}>{TEXT.modal.close}</span>
+                        <h2>{TEXT.add}</h2>
                         <form onSubmit={handleAddPrefix}>
                             <input
                                 type="text"
                                 name="prefix"
-                                placeholder="Префикс (например, +7)"
+                                placeholder={TEXT.placeholders.prefix}
                                 value={currentPrefix.prefix}
                                 onChange={(e) => {
-                                    setCurrentPrefix({...currentPrefix, prefix: e.target.value});
-                                    setValidationErrors({...validationErrors, prefix: null});
+                                    setCurrentPrefix({ ...currentPrefix, prefix: e.target.value });
+                                    setValidationErrors({ ...validationErrors, prefix: null });
                                 }}
                                 required
                             />
@@ -248,12 +278,12 @@ const PhonePrefixes = () => {
                                 name="countryCode"
                                 value={currentPrefix.countryCode}
                                 onChange={(e) => {
-                                    setCurrentPrefix({...currentPrefix, countryCode: e.target.value});
-                                    setValidationErrors({...validationErrors, countryCode: null});
+                                    setCurrentPrefix({ ...currentPrefix, countryCode: e.target.value });
+                                    setValidationErrors({ ...validationErrors, countryCode: null });
                                 }}
                                 required
                             >
-                                <option value="">Выберите страну</option>
+                                <option value="">{TEXT.actions.selectCountry}</option>
                                 {countries.map(country => (
                                     <option key={country.code} value={country.code}>
                                         {country.name} ({country.code})
@@ -262,7 +292,7 @@ const PhonePrefixes = () => {
                             </select>
                             {validationErrors.countryCode && <p className="error">{validationErrors.countryCode}</p>}
 
-                            <button type="submit" className="add-country-button">Добавить</button>
+                            <button type="submit" className="add-country-button">{TEXT.add}</button>
                         </form>
                     </div>
                 </div>
@@ -271,17 +301,17 @@ const PhonePrefixes = () => {
             {isEditModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
-                        <span className="close" onClick={handleCloseModals}>&times;</span>
-                        <h2>Редактировать телефонный префикс</h2>
+                        <span className="close" onClick={handleCloseModals}>{TEXT.modal.close}</span>
+                        <h2>{TEXT.edit}</h2>
                         <form onSubmit={handleUpdatePrefix}>
                             <input
                                 type="text"
                                 name="prefix"
-                                placeholder="Префикс"
+                                placeholder={TEXT.placeholders.prefixSimple}
                                 value={currentPrefix.prefix}
                                 onChange={(e) => {
-                                    setCurrentPrefix({...currentPrefix, prefix: e.target.value});
-                                    setValidationErrors({...validationErrors, prefix: null});
+                                    setCurrentPrefix({ ...currentPrefix, prefix: e.target.value });
+                                    setValidationErrors({ ...validationErrors, prefix: null });
                                 }}
                                 required
                             />
@@ -291,8 +321,8 @@ const PhonePrefixes = () => {
                                 name="countryCode"
                                 value={currentPrefix.countryCode}
                                 onChange={(e) => {
-                                    setCurrentPrefix({...currentPrefix, countryCode: e.target.value});
-                                    setValidationErrors({...validationErrors, countryCode: null});
+                                    setCurrentPrefix({ ...currentPrefix, countryCode: e.target.value });
+                                    setValidationErrors({ ...validationErrors, countryCode: null });
                                 }}
                                 required
                             >
@@ -304,7 +334,7 @@ const PhonePrefixes = () => {
                             </select>
                             {validationErrors.countryCode && <p className="error">{validationErrors.countryCode}</p>}
 
-                            <button type="submit" className="add-country-button">Сохранить</button>
+                            <button type="submit" className="add-country-button">{TEXT.actions.save}</button>
                         </form>
                     </div>
                 </div>
